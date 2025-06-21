@@ -1,0 +1,22 @@
+version: "3.2"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management-namnh
+    container_name: rabbit-server
+    restart: on-failure
+    
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - sds_network
+
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  sds_network:
+    name: sds_network
+    external: true
