@@ -15,11 +15,9 @@ services:
       - "15672:15672"  # Management UI
       - "5672:5672"    # AMQP port
     volumes:
-      - ./cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
       - rabbitmq1_data:/var/lib/rabbitmq
     networks:
       - rabbitmq_cluster
-    command: ["cluster-entrypoint.sh"]
 
   # RabbitMQ Node 2
   rabbitmq2:
@@ -35,13 +33,11 @@ services:
       - "15673:15672"  # Management UI
       - "5673:5672"    # AMQP port
     volumes:
-      - ./cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
       - rabbitmq2_data:/var/lib/rabbitmq
     networks:
       - rabbitmq_cluster
     depends_on:
       - rabbitmq1
-    command: ["cluster-entrypoint.sh"]
 
   # RabbitMQ Node 3
   rabbitmq3:
@@ -57,13 +53,11 @@ services:
       - "15674:15672"  # Management UI
       - "5674:5672"    # AMQP port
     volumes:
-      - ./cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
       - rabbitmq3_data:/var/lib/rabbitmq
     networks:
       - rabbitmq_cluster
     depends_on:
       - rabbitmq1
-    command: ["cluster-entrypoint.sh"]
 
   # HAProxy Load Balancer
   haproxy:

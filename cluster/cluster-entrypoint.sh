@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Ensure proper permissions for RabbitMQ directories
+chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
+chmod 755 /var/lib/rabbitmq
+chmod 600 /var/lib/rabbitmq/.erlang.cookie 2>/dev/null || true
+
 # Start RabbitMQ in the background
 /usr/local/bin/docker-entrypoint.sh rabbitmq-server &
 

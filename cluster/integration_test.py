@@ -64,7 +64,7 @@ class ClusterIntegrationTest:
         required_containers = ['rabbitmq1', 'rabbitmq2', 'rabbitmq3', 'rabbitmq_haproxy']
         
         try:
-            result = subprocess.run(['docker', 'ps', '--format', '{{.Names}}'], 
+            result = subprocess.run(['sudo', 'docker', 'ps', '--format', '{{.Names}}'], 
                                   capture_output=True, text=True, check=True)
             running_containers = result.stdout.strip().split('\n')
             
@@ -212,7 +212,7 @@ class ClusterIntegrationTest:
         try:
             # Check cluster status from node 1
             result = subprocess.run([
-                'docker', 'exec', 'rabbitmq1', 
+                'sudo', 'docker', 'exec', 'rabbitmq1', 
                 'rabbitmqctl', 'cluster_status'
             ], capture_output=True, text=True, check=True)
             
@@ -249,7 +249,7 @@ class ClusterIntegrationTest:
         
         try:
             result = subprocess.run([
-                'docker', 'exec', 'rabbitmq1',
+                'sudo', 'docker', 'exec', 'rabbitmq1',
                 'rabbitmqctl', 'list_policies'
             ], capture_output=True, text=True, check=True)
             

@@ -7,10 +7,10 @@ cd "$(dirname "$0")"
 
 # Stop the cluster
 echo "📦 Stopping cluster containers..."
-docker-compose -f docker-compose-cluster.yml down
+sudo docker-compose -f docker-compose-cluster.yml down
 
 echo "🧹 Removing stopped containers..."
-docker container prune -f
+sudo docker container prune -f
 
 echo "📊 Cluster Status:"
 echo "  • Containers stopped: ✅"
@@ -22,4 +22,4 @@ echo "🔄 To restart cluster:"
 echo "  ./start_cluster.sh"
 echo ""
 echo "🗑️ To completely remove (including data):"
-echo "  docker-compose -f docker-compose-cluster.yml down -v"
+echo "  sudo docker-compose -f docker-compose-cluster.yml down -v"

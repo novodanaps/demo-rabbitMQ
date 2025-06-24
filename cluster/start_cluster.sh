@@ -5,20 +5,51 @@ echo "🚀 Starting RabbitMQ Cluster Demo..."
 # Navigate to cluster directory
 cd "$(dirname "$0")"
 
+# Stop any existing containers
+echo "🧹 Cleaning up existing containers..."
+sudo docker-compose -f docker-compose-cluster.yml down
+
 # Start the cluster
 echo "📦 Starting RabbitMQ cluster with Docker Compose..."
-docker-compose -f docker-compose-cluster.yml up -d
+sudo docker-compose -f docker-compose-cluster.yml up -d
 
-echo "⏳ Waiting for cluster to be ready..."
-sleep 30
+echo "⏳ Waiting for primary node to be ready..."
+sleep 15
+
+# Wait for rabbitmq1 to be fully ready
+echo "🔍 Checking if primary node is ready..."
+until sudo docker exec rabbitmq1 rabbitmqctl status > /dev/null 2>&1; do
+    echo "   Waiting for rabbitmq1..."
+    sleep 5
+done
+
+echo "✅ Primary node is ready!"
+
+echo "🔗 Setting up cluster formation..."
+sleep 5
+
+# Join node 2 to cluster
+echo "   Adding rabbitmq2 to cluster..."
+sudo docker exec rabbitmq2 rabbitmqctl stop_app
+sudo docker exec rabbitmq2 rabbitmqctl reset
+sudo docker exec rabbitmq2 rabbitmqctl join_cluster rabbit@rabbitmq1
+sudo docker exec rabbitmq2 rabbitmqctl start_app
+
+# Join node 3 to cluster  
+echo "   Adding rabbitmq3 to cluster..."
+sudo docker exec rabbitmq3 rabbitmqctl stop_app
+sudo docker exec rabbitmq3 rabbitmqctl reset
+sudo docker exec rabbitmq3 rabbitmqctl join_cluster rabbit@rabbitmq1
+sudo docker exec rabbitmq3 rabbitmqctl start_app
 
 echo "🔧 Configuring High Availability policies..."
+sleep 5
 
-# Wait a bit more for all nodes to join
-sleep 10
+# Configure HA policies via primary node
+sudo docker exec rabbitmq1 rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
 
-# Configure HA policies via any node
-docker exec rabbitmq1 rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
+echo "🔍 Verifying cluster status..."
+sudo docker exec rabbitmq1 rabbitmqctl cluster_status
 
 echo "✅ RabbitMQ Cluster is ready!"
 echo ""
