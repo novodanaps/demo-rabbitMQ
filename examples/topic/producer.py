@@ -42,7 +42,7 @@ def send_message(routing_key, message):
         routing_key=routing_key,
         body=json.dumps(message_body),
         properties=pika.BasicProperties(
-            delivery_mode=2,  # Make message persistent
+            delivery_mode=2,  # Make message persistent, write to disk
         )
     )
     

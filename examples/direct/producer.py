@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 Direct Exchange Producer
 Sends messages to specific queues using exact routing key matching
+Date: 2025-06-01
+Author: Nguyen Hoai Nam
 """
 import pika
 import sys
@@ -19,6 +20,17 @@ def connect_rabbitmq():
     )
     return connection
 
+# TODO: Implement a callback function to handle responses
+"""
+import uuid
+corr_id = str(uuid.uuid4())
+def on_response(ch, method, props, body):
+    # Check if the correlation_id of the response matches the one of the request
+    if corr_id == props.correlation_id:
+        # Store the response in a variable
+        response = body
+"""
+
 def send_message(routing_key, message):
     """Send message to direct exchange with specific routing key"""
     connection = connect_rabbitmq()
@@ -27,6 +39,16 @@ def send_message(routing_key, message):
     # Declare the direct exchange
     exchange_name = 'direct_logs'
     channel.exchange_declare(exchange=exchange_name, exchange_type='direct')
+
+    # TODO: Declare a queue to receive responses and subscribe to it
+    """
+    response_queue = channel.queue_declare(queue="", exclusive=True)
+    channel.basic_consume(
+        queue=response_queue.method.queue,
+        on_message_callback=on_response,
+        auto_ack=True,
+    )
+    """
     
     # Create message with metadata
     message_body = {
@@ -36,6 +58,8 @@ def send_message(routing_key, message):
     }
     
     # Publish message
+    # NOTE: if you want send message when queue it not available, mandatory=True
+    # will return message to the producer, but if you want to send message when queue is 
     channel.basic_publish(
         exchange=exchange_name,
         routing_key=routing_key,

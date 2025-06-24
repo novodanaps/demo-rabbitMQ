@@ -46,8 +46,14 @@ def start_consuming(consumer_name="Anonymous"):
     channel.exchange_declare(exchange=exchange_name, exchange_type='fanout')
     
     # Create a unique queue for this consumer
-    result = channel.queue_declare(queue='', exclusive=True)
-    queue_name = result.method.queue
+    # NOTE: If use queue='', RabbitMQ will create a unique queue for each consumer and when the consumer disconnects, the queue will be deleted. So message will not be lost.
+    # CASE 1: 
+    # result = channel.queue_declare(queue='', exclusive=True)
+    # queue_name = result.method.queue
+    
+    # CASE 2:
+    queue_name = f'{consumer_name}_queue'
+    channel.queue_declare(queue=queue_name, durable=True)
     
     # Bind queue to exchange (no routing key needed for fanout)
     channel.queue_bind(exchange=exchange_name, queue=queue_name)
