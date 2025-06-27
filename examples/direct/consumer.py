@@ -57,12 +57,12 @@ def consume_messages(routing_keys):
     # Create a unique queue for this consumer
     # NOTE: If use queue='', RabbitMQ will create a unique queue for each consumer and when the consumer disconnects, the queue will be deleted. So message will not be lost.
     # CASE 1: 
-    result = channel.queue_declare(queue='', exclusive=True)
-    queue_name = result.method.queue
+    # result = channel.queue_declare(queue='', exclusive=True)
+    # queue_name = result.method.queue
     
     # CASE 2:
-    # queue_name = 'my_consumer_queue'
-    # channel.queue_declare(queue=queue_name)
+    queue_name = 'my_consumer_queue'
+    channel.queue_declare(queue=queue_name)
 
     # Bind queue to exchange for each routing key
     for routing_key in routing_keys:
